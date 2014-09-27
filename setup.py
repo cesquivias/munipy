@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-setup(name='led_sign',
+setup(name='munipy',
       version='0.1',
       description='NextBus times sent to LED sign',
       license='GNU GPLv3',
