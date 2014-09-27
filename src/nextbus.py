@@ -44,6 +44,9 @@ def predictions(dom):
 
 def prediction_messages(predictions):
     return [('{0}-{1}'.format(route, preds[0].direction),
-             ' & '.join('{0} min'.format(p.minutes) for p in preds))
+             ' & '.join('{0} min'.format(p.minutes)
+                        if p.minutes
+                        else 'Arriving'
+                        for p in preds))
             for route, preds
             in predictions.iteritems()]
