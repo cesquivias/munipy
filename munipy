@@ -6,8 +6,8 @@ from itertools import chain
 
 from led_sign.client import SignClient
 
-from client import (predictions_url, next_bus_dom, predictions,
-                    prediction_messages)
+from nextbus import (predictions_url, next_bus_dom, predictions,
+                     prediction_messages)
 
 def main(stop_ids, delay):
     client = SignClient()
