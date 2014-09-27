@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import logging
+import logging.handlers
 import time
 
 from itertools import chain
@@ -9,14 +11,40 @@ from led_sign.client import SignClient
 from munipy.nextbus import (predictions_url, next_bus_dom, predictions,
                             prediction_messages)
 
+
+try:
+    LOG_FILENAME = '/var/log/munipy.log'
+    log = logging.getLogger('munipy-logger')
+    log.addHandler(logging.handlers.RotatingFileHandler(LOG_FILENAME,
+                                                        maxBytes=1000000,
+                                                        backupCount=5))
+except:
+    log = logging.getLogger('munipy-logger')
+    log.addHandler(logging.StreamHandler())
+
+log.setLevel(logging.DEBUG)
+
+
 def main(stop_ids, delay):
     client = SignClient()
     while True:
-        client.send_multiple_messages(
-            chain(*[prediction_messages(
+        try:
+            messages = chain(*[
+                    prediction_messages(
                         predictions(
-                            next_bus_dom(predictions_url(stop_id))))
-                    for stop_id in stop_ids]))
+                            next_bus_dom(
+                                predictions_url(
+                                    stop_id))))
+                               for stop_id in stop_ids])
+        except Exception, e:
+            log.exception('DOM failed: %s', str(e))
+            messages = [('Fetching data', 'failed')]
+
+        try:
+            client.send_multiple_messages(messages)
+        except Exception, e:
+            log.critical('LED failed: %s', str(e))
+
         time.sleep(delay)
 
 if __name__ == '__main__':
@@ -28,8 +56,8 @@ if __name__ == '__main__':
     parser.add_argument('stop_ids', metavar='stop-id', type=int, nargs='+',
                         help='muni stop id')
     parser.add_argument('--update-interval', dest='update_interval',
-                        metavar='secs', type=int,
-                        help='Refresh delay (seconds)')
+                        metavar='secs', type=int, default=60,
+                        help='Refresh delay (default: 60 seconds)')
 
     args = parser.parse_args()
 
