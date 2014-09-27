@@ -15,14 +15,17 @@ from munipy.nextbus import (predictions_url, next_bus_dom, predictions,
 try:
     LOG_FILENAME = '/var/log/munipy.log'
     log = logging.getLogger('munipy-logger')
-    log.addHandler(logging.handlers.RotatingFileHandler(LOG_FILENAME,
-                                                        maxBytes=1000000,
-                                                        backupCount=5))
+    handler = logging.handlers.RotatingFileHandler(LOG_FILENAME,
+                                                   maxBytes=1000000,
+                                                   backupCount=5)
 except:
     log = logging.getLogger('munipy-logger')
-    log.addHandler(logging.StreamHandler())
+    handler = logging.StreamHandler()
 
 log.setLevel(logging.DEBUG)
+log.addHandler(handler)
+formatter = logging.Formatter('%(asctime)s    %(name)s    %(levelname)s    %(message)s')
+handler.setFormatter(formatter)
 
 
 def main(stop_ids, delay):
