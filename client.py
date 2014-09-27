@@ -5,11 +5,15 @@ stop_id -> url -> next_bus_dom -> {route_tag: Predictions} -> [(str/title, str/m
 """
 
 import contextlib
+import time
 import urllib
 
 from collections import namedtuple
 from functools import partial
+from itertools import chain
 from xml.dom.minidom import parseString
+
+from led_sign.client import SignClient
 
 
 Prediction = namedtuple('Prediction', ['route_tag', 'direction', 'minutes'])
@@ -48,10 +52,28 @@ def prediction_messages(predictions):
             for route, preds
             in predictions.iteritems()]
 
-def main(stop_ids):
-    predictions(predictions_url(stop_ids))
+def main(stop_ids, delay):
+    client = SignClient()
+    while True:
+        client.send_multiple_messages(
+            chain(*[prediction_messages(
+                        predictions(
+                            next_bus_dom(predictions_url(stop_id))))
+                    for stop_id in stop_ids]))
+        time.sleep(delay)
 
 if __name__ == '__main__':
     import sys
 
-    main(int(e) for e in sys.argv[1:])
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(description='Fetch MUNI wait times.')
+    parser.add_argument('stop_ids', metavar='stop-id', type=int, nargs='+',
+                        help='muni stop id')
+    parser.add_argument('--update-interval', dest='update_interval',
+                        metavar='secs', type=int,
+                        help='Refresh delay (seconds)')
+
+    args = parser.parse_args()
+
+    main(args.stop_ids, args.update_interval)
