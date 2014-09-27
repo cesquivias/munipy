@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+import time
+
+from itertools import chain
+
+from led_sign.client import SignClient
+
+from client import (predictions_url, next_bus_dom, predictions,
+                    prediction_messages)
+
+def main(stop_ids, delay):
+    client = SignClient()
+    while True:
+        client.send_multiple_messages(
+            chain(*[prediction_messages(
+                        predictions(
+                            next_bus_dom(predictions_url(stop_id))))
+                    for stop_id in stop_ids]))
+        time.sleep(delay)
+
+if __name__ == '__main__':
+    import sys
+
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(description='Fetch MUNI wait times.')
+    parser.add_argument('stop_ids', metavar='stop-id', type=int, nargs='+',
+                        help='muni stop id')
+    parser.add_argument('--update-interval', dest='update_interval',
+                        metavar='secs', type=int,
+                        help='Refresh delay (seconds)')
+
+    args = parser.parse_args()
+
+    main(args.stop_ids, args.update_interval)
