@@ -40,10 +40,9 @@ def main(stop_ids, delay):
             log.exception('DOM failed: %s', str(e))
             messages = [('Fetching data', 'failed')]
 
-        try:
-            client.send_multiple_messages(messages)
-        except Exception, e:
-            log.critical('LED failed: %s', str(e))
+        is_success = client.send_multiple_messages(messages)
+        if not is_success:
+            log.critical('LED error: call to perl failed')
 
         time.sleep(delay)
 
