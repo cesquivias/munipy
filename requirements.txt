@@ -1,0 +1,1 @@
+-e git://github.com/cesquivias/led_sign@538efc4d097c052765b00b6611a3e599eed24885#egg=led_sign-master
