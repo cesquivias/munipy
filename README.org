@@ -1,0 +1,27 @@
+* Installation
+  The LED sign requires a Perl CPAN library.
+  #+begin_src shell-script
+    sudo apt-get install perl
+    sudo cpan Device::MiniLED
+  #+end_src
+
+  The app is written in Python and uses [[https://pip.pypa.io/en/latest/][PIP]].
+  #+begin_src shell-script
+    sudo apt-get install python-pip
+    sudo pip install git+https://github.com/cesquivias/led_sign.git
+    sudo pip install git+https://github.com/cesquivias/munipy.git
+  #+end_src
+
+  You can have munipy run at startup
+  #+begin_src shell-script
+    sudo cp bin/init.d-munipy /etc/init.d/munipy
+    sudo update-rc.d munipy defaults 90
+  #+end_src
+
+* Usage
+  You can run the script directly. An example:
+  #+begin_src shell-script
+    ./bin/munipy --update-interval=30 14759 13893
+  #+end_src
+
+  You can run ~munipy --help~ for all options.
