@@ -10,6 +10,7 @@ from led_sign.client import SignClient
 
 from munipy.nextbus import (predictions_url, next_bus_dom, predictions,
                             prediction_messages)
+from munipy.time import datetime_message
 
 
 try:
@@ -24,21 +25,23 @@ except:
 
 log.setLevel(logging.DEBUG)
 log.addHandler(handler)
-formatter = logging.Formatter('%(asctime)s    %(name)s    %(levelname)s    %(message)s')
+formatter = logging.Formatter(
+    '%(asctime)s    %(name)s    %(levelname)s    %(message)s')
 handler.setFormatter(formatter)
 
 
-def main(stop_ids, delay):
+def main(stop_ids, delay, show_times):
     client = SignClient()
     while True:
         try:
-            messages = chain(*[
-                    prediction_messages(
+            messages = chain(
+                [datetime_message()] if show_times else [],
+                *[prediction_messages(
                         predictions(
                             next_bus_dom(
                                 predictions_url(
                                     stop_id))))
-                               for stop_id in stop_ids])
+                  for stop_id in stop_ids])
         except Exception, e:
             log.exception('DOM failed: %s', str(e))
             messages = [('Fetching data', 'failed')]
@@ -60,7 +63,9 @@ if __name__ == '__main__':
     parser.add_argument('--update-interval', dest='update_interval',
                         metavar='secs', type=int, default=60,
                         help='Refresh delay (default: 60 seconds)')
+    parser.add_argument('-t', '--show-time', action='store_true',
+                        help='Show the date and time before bus times')
 
     args = parser.parse_args()
 
-    main(args.stop_ids, args.update_interval)
+    main(args.stop_ids, args.update_interval, args.show_time)
