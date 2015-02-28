@@ -14,14 +14,22 @@
 
   You can have munipy run at startup
   #+begin_src shell-script
-    sudo cp bin/init.d-munipy /etc/init.d/munipy
+    wget https://github.com/cesquivias/munipy/blob/master/bin/init.d-munipy
+    chmod 755 init.d-munipy
+    # update DAEMON_ARGS inside init.d-munipy...
+    sudo cp init.d-munipy /etc/init.d/munipy
     sudo update-rc.d munipy defaults 90
+  #+end_src
+
+  To start the service
+  #+begin_src shell-script
+    sudo /etc/init.d/munipy start
   #+end_src
 
 * Usage
   You can run the script directly. An example:
   #+begin_src shell-script
-    ./bin/munipy --update-interval=30 14759 13893
+    ./bin/munipy --show-time --update-interval=30 14759 13893
   #+end_src
 
   You can run ~munipy --help~ for all options.
