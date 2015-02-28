@@ -19,7 +19,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Display MUNI times on LED sign"
 NAME=munipy
 DAEMON=/usr/local/bin/$NAME
-DAEMON_ARGS="--update-interval=30 14759 14768 15710"
+DAEMON_ARGS="--show-time --update-interval=30 14759 14768 15710"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
